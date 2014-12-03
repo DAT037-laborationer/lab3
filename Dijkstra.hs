@@ -55,8 +55,9 @@ dijkstra g u v = loop (decrease (u :-> 0) q0)
     Just (w :-> d, q') -> case w == v of
       True -> Just ([v], 0)
       _    -> Just (w:vs, wgt + c)
-        where wgt = case PSQ.findMin q' of
+        where wgt = case PSQ.findMin dq' of
                       Nothing        -> 0
                       Just (x :-> _) -> weight g w x 
-              Just (vs,c)      = loop (decreaseList bs q')
+              Just (vs,c)      = loop dq'
+              dq' = decreaseList bs q'
               bs = [v :-> (d + weight g w v) | v <- adjacent g w ]
