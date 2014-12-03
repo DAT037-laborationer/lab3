@@ -3,6 +3,7 @@ import Lab3GUI
 import Graph
 import Dijkstra
 
+-- | Description of a Graph.
 
 
 type Line = (String,Int)
