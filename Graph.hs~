@@ -1,10 +1,11 @@
 module Graph where
 
+-- | Description of a Graph.
 data Graph = Graph [Elem]
 data Elem  = Elem
   { namn   :: String
   , pos    :: (Integer,Integer)
-  , adj    :: [(String, Integer)]
+  , adj    :: [(String, Double)]
   } deriving (Eq,Ord,Show)
 
 getName :: Elem -> String
