@@ -2,8 +2,8 @@ module Dijkstra where
 
 import Data.PSQueue (PSQ, Binding(..))
 import qualified Data.PSQueue as PSQ
-import Data.Map (Map)
-import qualified Data.Map as Map
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Data.List
 import Graph
@@ -49,29 +49,27 @@ vertices (Graph ns) = sort [ getName x | x <- ns ]
 -- | Takes a graph and two nodes and returns a list of stops along the shortest
 -- | path between two nodes and the total travel time along that path.	
 dijkstra :: Graph -> Vertex -> Vertex -> Maybe ([Vertex], Cost)
-dijkstra g u v 
-  | Map.empty /= vs = Just (getPath v vs, getCost v vs)
-  | otherwise       = error "No path found"
+dijkstra g u v = Just (getPath v vs, getCost v vs)
   where
   vs = loop (decrease (u :-> (0,"")) q0)
   q0 = PSQ.fromAscList [ v :-> (infinity,"") | v <- vertices g ]
   loop q = case PSQ.minView q of
-    Nothing               -> Map.empty
+    Nothing               -> error "No path found"
     Just (w :-> (d,p),q') -> case w == v of
-      True  -> Map.fromList [(w,(d,p))]
+      True  -> Map.singleton w (d,p)
       False -> Map.insert w (d,p) ((loop . decreaseList bs) q')
         where
         bs = [v :-> (d + weight g w v,w) | v <- adjacent g w ]
 
 
 getPath :: Vertex -> Map Vertex (Cost,Vertex) -> [Vertex]
-getPath v m 
-  | v == ""   = []
-  | otherwise = reverse (v : getPath v' m)
+getPath v m = reverse (f v m)
   where 
-  v' = case Map.lookup v m of
-    Nothing    -> error "Not found"
-    Just (_,p) -> p 
+  f v m
+    | v == ""   = []
+    | otherwise = case Map.lookup v m of
+        Nothing     -> error "Not found"
+        Just (_,v') -> v : getPath v' m
 
 getCost :: Vertex -> Map Vertex (Cost,Vertex) -> Cost
 getCost v m = case Map.lookup v m of
