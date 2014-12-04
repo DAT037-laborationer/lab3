@@ -2,11 +2,18 @@ module Dijkstra where
 
 import Data.PSQueue (PSQ, Binding(..))
 import qualified Data.PSQueue as PSQ
+import Data.Map (Map)
+import qualified Data.Map as Map
+import Data.Maybe
+import Data.List
 import Graph
 
 type Vertex = String
 type Weight = Graph -> Vertex -> Vertex -> Double
 type Cost   = Double
+
+exampleQ :: PSQ Vertex (Cost,Vertex)
+exampleQ = PSQ.fromAscList [ x :-> (infinity,"") | x <- vertices example ]
 
 -- | Givnen a binding, decrease lowers a vertex's path cost in a priority 
 -- | search queue.
@@ -15,15 +22,15 @@ decrease (k :-> p) q = PSQ.adjust (min p) k q
 
 -- | Given a list of bindings, decreaseList lowers the vertices' path costs
 -- | in a priority search queue
-decreaseList :: (Ord k, Ord p) => [Binding k p] -> PSQueue k p -> PSqueue k p
+decreaseList :: (Ord k, Ord p) => [Binding k p] -> PSQ k p -> PSQ k p
 decreaseList bs q = foldr decrease q bs
 
 weight :: Weight
-weight (Graph []) _ _ = error "Not found"
+weight (Graph []) _ _ = 0
 weight (Graph (e:es)) u v
   | getName e == u    = findV (getAdj e) v 
   | otherwise         = weight (Graph es) u v
-  where findV [] _ = error "Not found"
+  where findV [] _ = 0
         findV ((n,w):as) v
           | n == v    = w
           | otherwise = findV as v
@@ -37,18 +44,36 @@ adjacent (Graph (e:es)) v
   | otherwise         = adjacent (Graph es) v
 
 vertices :: Graph -> [Vertex]
-vertices (Graph ns) = [ getName x | x <- ns ]
+vertices (Graph ns) = sort [ getName x | x <- ns ]
  
 -- | Takes a graph and two nodes and returns a list of stops along the shortest
 -- | path between two nodes and the total travel time along that path.	
 dijkstra :: Graph -> Vertex -> Vertex -> Maybe ([Vertex], Cost)
-dijkstra g u v = loop (decrease (u :-> 0) q0)
+dijkstra g u v 
+  | Map.empty /= vs = Just (getPath v vs, getCost v vs)
+  | otherwise       = error "No path found"
   where
-  q0 = PSQ.fromAscList [ v :-> infinity | v <- vertices g ]
+  vs = loop (decrease (u :-> (0,"")) q0)
+  q0 = PSQ.fromAscList [ v :-> (infinity,"") | v <- vertices g ]
   loop q = case PSQ.minView q of
-    Nothing           -> Nothing
-    Just (w :-> d, q) -> case v == w of
-      True -> Just ([], 0)
-      _    -> Just (v:vs, weight g u w + c)
-        where Just (vs,c) = loop (decreaseList bs q)
-              bs = [v :-> d + weight g u v | v <- adjacent g u ]
+    Nothing               -> Map.empty
+    Just (w :-> (d,p),q') -> case w == v of
+      True  -> Map.fromList [(w,(d,p))]
+      False -> Map.insert w (d,p) ((loop . decreaseList bs) q')
+        where
+        bs = [v :-> (d + weight g w v,w) | v <- adjacent g w ]
+
+
+getPath :: Vertex -> Map Vertex (Cost,Vertex) -> [Vertex]
+getPath v m 
+  | v == ""   = [v]
+  | otherwise = reverse (v : getPath v' m)
+  where 
+  v' = case Map.lookup v m of
+    Nothing    -> error "Not found"
+    Just (_,p) -> p 
+
+getCost :: Vertex -> Map Vertex (Cost,Vertex) -> Cost
+getCost v m = case Map.lookup v m of
+  Nothing    -> error "Not found"
+  Just (d,_) -> d 
