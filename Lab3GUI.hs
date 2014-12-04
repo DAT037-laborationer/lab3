@@ -8,7 +8,7 @@ import Control.Monad
 import Lab3Help as L3
 
 -- | The cost of a path, expressed in minutes.
-type Cost = Int
+type Cost = Double
 
 -- | The name of a tram/bus stop.
 type Name = String

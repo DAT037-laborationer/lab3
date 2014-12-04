@@ -8,7 +8,7 @@ main = do
   Right bstops <- readStops "your-stops.txt"
   Right blines <- readLines "your-lines.txt"
   let graph = example -- Build your graph here using bstops and blines
-  runGUI bstops blines graph shortestPath
+  runGUI bstops blines graph dijkstra
 
 parseGraph :: [BLineTable] -> Graph
 parseGraph (x:xs) = undefined

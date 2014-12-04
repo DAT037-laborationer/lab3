@@ -2,15 +2,16 @@ module Dijkstra where
 
 import Data.PSQueue (PSQ, Binding(..))
 import qualified Data.PSQueue as PSQ
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Data.Maybe
 import Data.List
 import Graph
+import qualified Lab3GUI as GUI
 
 type Vertex = String
 type Weight = Graph -> Vertex -> Vertex -> Double
-type Cost   = Double
+type Cost   = GUI.Cost
 
 exampleQ :: PSQ Vertex (Cost,Vertex)
 exampleQ = PSQ.fromAscList [ x :-> (infinity,"") | x <- vertices example ]
