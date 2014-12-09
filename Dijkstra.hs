@@ -62,7 +62,6 @@ dijkstra g u v = Just (getPath v vs, getCost v vs)
         where
         bs = [v :-> (d + weight g w v,w) | v <- adjacent g w ]
 
-
 getPath :: Vertex -> Map Vertex (Cost,Vertex) -> [Vertex]
 getPath v m = reverse (f v m)
   where 
@@ -70,7 +69,7 @@ getPath v m = reverse (f v m)
     | v == ""   = []
     | otherwise = case Map.lookup v m of
         Nothing     -> error "Not found"
-        Just (_,v') -> v : getPath v' m
+        Just (_,v') -> v : f v' m
 
 getCost :: Vertex -> Map Vertex (Cost,Vertex) -> Cost
 getCost v m = case Map.lookup v m of
