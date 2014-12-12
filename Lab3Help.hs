@@ -45,7 +45,7 @@ data BLineStop = BLineStop
                 --
                 -- Invariant: A non-negative number, 0 if this is the
                 -- first stop.
-  } deriving Show
+  } deriving (Show, Eq)
 
 -- | Tries to parse a non-negative integer.
 
