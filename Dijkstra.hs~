@@ -26,7 +26,6 @@ decrease (k :-> p) q = PSQ.adjust (min p) k q
 decreaseList :: (Ord k, Ord p) => [Binding k p] -> PSQ k p -> PSQ k p
 decreaseList bs q = foldr decrease q bs
 
--- | Calculates the distance between two vertices in a graph.
 weight :: Weight
 weight (Graph []) _ _ = 0
 weight (Graph (e:es)) u v
@@ -39,14 +38,12 @@ weight (Graph (e:es)) u v
 
 infinity = 1/0
 
--- | Returns the neighbours of a Vertex.
 adjacent :: Graph -> Vertex -> [Vertex]
 adjacent (Graph []) _ = []
 adjacent (Graph (e:es)) v 
   | getName e == v    = map (fst) (getAdj e)
   | otherwise         = adjacent (Graph es) v
 
--- | Returns all the vertices in a Graph.
 vertices :: Graph -> [Vertex]
 vertices (Graph ns) = sort [ getName x | x <- ns ]
  
@@ -65,8 +62,6 @@ dijkstra g u v = Just (getPath v vs, getCost v vs)
         where
         bs = [v :-> (d + weight g w v,w) | v <- adjacent g w ]
 
--- | Calculates the path from the starting node to a given Vertex and returns
--- | the path list.
 getPath :: Vertex -> Map Vertex (Cost,Vertex) -> [Vertex]
 getPath v m = reverse (f v m)
   where 
@@ -76,8 +71,6 @@ getPath v m = reverse (f v m)
         Nothing     -> error "Not found"
         Just (_,v') -> v : f v' m
 
--- | Calculates the path from the starting node to a given Vertex and returns
--- | the path cost.
 getCost :: Vertex -> Map Vertex (Cost,Vertex) -> Cost
 getCost v m = case Map.lookup v m of
   Nothing    -> error "Not found"

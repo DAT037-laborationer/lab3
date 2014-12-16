@@ -8,16 +8,13 @@ data Elem  = Elem
   , adj    :: [(String, Double)]
   } deriving (Eq,Ord,Show)
 
--- | Returns an empty Graph.
 emptyGraph :: Graph
 emptyGraph = Graph []
 
--- | Adds an element to a Graph.
 addName :: String -> Graph -> Graph
 addName n (Graph []) = Graph [ Elem{namn = n, adj = []} ]
 addName n (Graph es) = Graph ((Elem{namn = n, adj = []}) : es)
 
--- | Adds an adjacent element to a Graph.
 addAdj :: String -> String -> Double -> Graph -> Graph
 addAdj _ _ _  (Graph [])
                 = error "The graph is empty"
@@ -26,7 +23,6 @@ addAdj n n' d g = Graph ( l ++ [Elem {namn = name, adj = ((n',d):as)}] ++
   where
   (Graph l,Elem{namn = name, adj = as},Graph r) = (findElem n g)
 
--- | Finds an element in a Graph.
 findElem :: String -> Graph -> (Graph,Elem,Graph)
 findElem n (Graph []) = error "Not found"
 findElem n (Graph (e:es))
@@ -35,15 +31,13 @@ findElem n (Graph (e:es))
  where
  (Graph l,e',gr) = findElem n (Graph es)
 
--- | Returns the name of the element.
+
 getName :: Elem -> String
 getName (Elem{namn = n}) = n
 
--- | Returns the neighbour of the element.
 getAdj :: Elem -> [(String, Double)]
 getAdj (Elem{adj = a})   = a
 
--- | Example Graph for testing.
 example :: Graph
 example = Graph [ Elem { namn = "Brunnsparken"
                        , adj = [ ("Centralstationen",1)

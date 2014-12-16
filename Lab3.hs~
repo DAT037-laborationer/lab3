@@ -40,4 +40,9 @@ addNextStops (bl:bls) g = addNextStops bls (func bl g)
     bl'        = BLineTable {lineNumber = lineNumber bl, stops = (b:xs)}
     adj        = addAdj (stopName a) (stopName b) ((fromIntegral . time) b) g
 
-
+{-
+addNextStops :: [BLineTable] -> Graph -> Graph
+addNextStops [] g = g
+addNextStops ((BLineTable {stops = (BLineStop{stopName = s1}:BLineStop{stopName = s2, time = t}:ss)}) : bls) g
+                  = addNextStops (bls) (addAdj s1 s2 (fromIntegral t) g)
+-}
