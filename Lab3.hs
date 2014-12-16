@@ -10,11 +10,15 @@ import Dijkstra
 main :: IO ()
 main = do
   a <- getArgs
---  if length a < 2 then error "Too few arguments given" else putStr "Hej"
-  Right bstops <- readStops "stops-gbg.txt" -- Right bstops <- readStops (a !! 0)
-  Right blines <- readLines "lines-gbg.txt" -- Right blines <- readLines (a !! 1)
+  if length a < 2 then error "Too few arguments given" else doNothing
+  Right bstops <- readStops (a !! 0)
+  Right blines <- readLines (a !! 1)
   let graph = toGraph bstops blines -- Build your graph here using bstops and blines
   runGUI bstops blines graph dijkstra
+
+-- | Does nothing.
+doNothing :: IO()
+doNothing = return ()
 
 -- | Takes two lists of BStops and BLineTables and converts them to a 
 -- | Graph.
